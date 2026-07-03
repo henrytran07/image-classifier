@@ -34,8 +34,8 @@ def load_dense_model_ds():
             y_test shape: (10000, 1) 
     """
     x_train, y_train, m_train, x_test, y_test, m_test = load_mnist_ds()
-    x_train_dm = x_train.reshape(m_train, -1)
-    x_test_dm = x_test.reshape(m_test, -1)
+    x_train_dm = x_train.reshape(-1, m_train)
+    x_test_dm = x_test.reshape(-1, m_test)
     return x_train_dm, y_train, x_test_dm, y_test 
 
 def load_cnn_model_ds(): 
@@ -53,6 +53,3 @@ def load_cnn_model_ds():
     x_test_sliced = x_test[:]
     x_test_cnn = np.stack([x_test_sliced, x_test_sliced, x_test_sliced], axis=3)
     return x_train_cnn, y_train, x_test_cnn, y_test 
-
-
-
