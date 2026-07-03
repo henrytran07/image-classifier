@@ -1,5 +1,6 @@
 from datasets import load_dataset
 import numpy as np 
+from .activations import z_score_normalization
 
 def load_mnist_ds(): 
     """
@@ -28,15 +29,15 @@ def load_mnist_ds():
 def load_dense_model_ds(): 
     """
         Return: 
-            x_train_dm shape: (60000, 784)
+            x_train_dm_normalized shape: (784, m_train)
             y_train shape: (60000, 1)
-            x_test_dm shape: (10000, 784)
+            x_test_dm_normalized shape: (784, m_test)
             y_test shape: (10000, 1) 
     """
     x_train, y_train, m_train, x_test, y_test, m_test = load_mnist_ds()
-    x_train_dm = x_train.reshape(-1, m_train)
-    x_test_dm = x_test.reshape(-1, m_test)
-    return x_train_dm, y_train, x_test_dm, y_test 
+    x_train_dm_normalized = z_score_normalization(x_train.reshape(-1, m_train))
+    x_test_dm_normalized = z_score_normalization(x_test.reshape(-1, m_test))
+    return x_train_dm_normalized, y_train, x_test_dm_normalized, y_test 
 
 def load_cnn_model_ds(): 
     """
@@ -47,9 +48,9 @@ def load_cnn_model_ds():
             y_test shape: (10000, 1) 
     """
     x_train, y_train, _, x_test, y_test, _ = load_mnist_ds()
-    x_train_sliced = x_train[:]
-    x_train_cnn = np.stack([x_train_sliced, x_train_sliced, x_train_sliced], axis=3)
+    x_train_sliced_norm = z_score_normalization(x_train[:])
+    x_train_cnn = np.stack([x_train_sliced_norm, x_train_sliced_norm, x_train_sliced_norm], axis=3)
 
-    x_test_sliced = x_test[:]
-    x_test_cnn = np.stack([x_test_sliced, x_test_sliced, x_test_sliced], axis=3)
+    x_test_sliced_norm = x_test[:]
+    x_test_cnn = np.stack([x_test_sliced_norm, x_test_sliced_norm, x_test_sliced_norm], axis=3)
     return x_train_cnn, y_train, x_test_cnn, y_test 
