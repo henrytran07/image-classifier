@@ -117,3 +117,26 @@ $W = W - \alpha \frac{v_{dW}^{corr}}{\sqrt{s_{dW}^{corr} + \epsilon}} \quad \qua
 
 $\gamma = \gamma - \alpha \frac{v_{d\gamma}^{corr}}{\sqrt{s_{d\gamma}^{corr} + \epsilon}} \quad \quad \beta = \beta - \alpha \frac{v_{d\beta}^{corr}}{\sqrt{s_{d\beta}^{corr} + \epsilon}}$
 
+### Split Training Examples into Mini-Batches
+
+- Batch size: 64
+
+**Shuffle** training examples at the start of each epoch:
+```python
+order = np.random.permutation(m)
+X = X[:, order]
+Y = Y[:, order]
+```
+
+**Partition** into batches:
+- `num_batches = m // batch_size`
+- `remainder = m % batch_size`
+
+For each batch `i` in `range(num_batches)`:
+- `start = i * batch_size`
+- `end = (i + 1) * batch_size`
+- `X_batch = X[:, start:end]` — shape `(784, 64)`
+- `Y_batch = Y[:, start:end]` — shape `(10, 64)`
+
+If `remainder > 0`, the last batch covers `X[:, num_batches * batch_size:]`
+
