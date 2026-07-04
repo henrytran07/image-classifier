@@ -59,3 +59,58 @@ def forward_prop(params, X):
     cache['z4'] = z4 
 
     return cache, A4 
+
+def relu_derivative(z : np): 
+    """
+        if z > 0: da / dz = 1 
+        or da / az = 0 if z <= 0
+    """ 
+    def filter_function(z : np): 
+        return z > 0
+
+    f = filter_function(z)
+    return f.astype(float)
+
+def backward_prop(A4 : np, X: np, Y: np, cache : dict, params: dict): 
+    """
+        A4: (n_classes, m)
+        cache: dict contains z1, A1, z2, A2, z3, A3, z4
+        params: dict contains W1, b1, W2, b2, W3, b3, W4, b4
+        Y: ground_truth (1, m)
+        Return: 
+            params: dict contains dW1, db1, dW2, db2, dW3, db3, dW4, db4
+
+    """
+    grads = {}
+    m = A4.shape[1]
+    z1, A1 = cache['z1'], cache['A1']
+    z2, A2 = cache['z2'], cache['A2']
+    z3, A3 = cache['z3'], cache['A3']
+
+    dZ4 = A4 - Y
+    dW4 = (1 / m) * dZ4 @ A3.T
+    db4 = (1 / m) * np.sum(dZ4, axis=1, keepdims=True)
+    
+    dZ3 = params['W4'].T @ dZ4 * relu_derivative(z3)
+    dW3 = (1/ m) * dZ3 @ A2.T
+    db3 = (1 / m) * np.sum(dZ3, axis=1, keepdims=True)
+
+    dZ2 = params['W3'].T @ dZ3 * relu_derivative(z2)
+    dW2 = (1/ m) * dZ2 @ A1.T
+    db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
+
+    dZ1 = params['W2'].T @ dZ2 * relu_derivative(z1)
+    dW1 = (1 / m) * dZ1 @ X.T
+    db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
+
+    grads['dW4'], grads['db4'] = dW4, db4
+    grads['dW3'], grads['db3'] = dW3, db3
+    grads['dW2'], grads['db2'] = dW2, db2
+    grads['dW1'], grads['db1'] = dW1, db1
+    
+    return grads
+
+
+
+
+
