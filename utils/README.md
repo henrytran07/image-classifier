@@ -100,7 +100,7 @@ $$v_{d\gamma} = \beta_1v_{d\gamma} + (1 - \beta_1)d\gamma$$
 $$s_{d\gamma} = \beta_2s_{d\gamma} + (1 - \beta_2)d\gamma^2$$
 
 $$v_{d\beta} = \beta_1v_{d\beta} + (1 - \beta_1)d\beta$$
-$$s_{d\beta} = \beta_2s_{d\beta} + (1 - \beta_2)d\beta^2^$$
+$$s_{d\beta} = \beta_2s_{d\beta} + (1 - \beta_2)d\beta^2$$
 ### Bias Correction 
 
 $v_{dW}^{corr} = \frac{v_{dW}}{1 - \beta_1^t} \quad \quad s_{dW}^{corr} = \frac{s_{dW}}{1 - \beta_2^t}$ with t is number of steps 
