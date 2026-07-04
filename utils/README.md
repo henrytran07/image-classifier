@@ -90,17 +90,17 @@ $$\frac{\partial L}{\partial \gamma} = \frac{1}{m}\text{np.sum}(dZ \odot \hat{z}
 $$\frac{\partial L}{\partial \beta} = \frac{1}{m}\text{np.sum}(dZ, \text{axis}=1, \text{keepdims}=True)$$
 
 ### Adam Optimizer 
-$v_{dW} = \beta_1v_{dW} + (1 - \beta_1)dW$
-$s_{dW} = \beta_2s_{dW} + (1 - \beta_2)dW$
+$$v_{dW} = \beta_1v_{dW} + (1 - \beta_1)dW$$
+$$s_{dW} = \beta_2s_{dW} + (1 - \beta_2)dW**2$$
 
-$v_{db} = \beta_1v_{db} + (1 - \beta_1)db$
-$s_{db} = \beta_2s_{db} + (1 - \beta_2)db$
+$$v_{db} = \beta_1v_{db} + (1 - \beta_1)db$$
+$$s_{db} = \beta_2s_{db} + (1 - \beta_2)**2db$$
 
-$v_{d\gamma} = \beta_1v_{d\gamma} + (1 - \beta_1)d\gamma$
-$s_{d\gamma} = \beta_2s_{d\gamma} + (1 - \beta_2)d\gamma$
+$$v_{d\gamma} = \beta_1v_{d\gamma} + (1 - \beta_1)d\gamma$$
+$$s_{d\gamma} = \beta_2s_{d\gamma} + (1 - \beta_2)d\gamma**2$$
 
-$v_{d\beta} = \beta_1v_{d\beta} + (1 - \beta_1)d\beta$
-$s_{d\beta} = \beta_2s_{d\beta} + (1 - \beta_2)d\beta$
+$$v_{d\beta} = \beta_1v_{d\beta} + (1 - \beta_1)d\beta$$
+$$s_{d\beta} = \beta_2s_{d\beta} + (1 - \beta_2)d\beta**2$$
 ### Bias Correction 
 
 $v_{dW}^{corr} = \frac{v_{dW}}{1 - \beta_1^t} \quad \quad s_{dW}^{corr} = \frac{s_{dW}}{1 - \beta_2^t}$ with t is number of steps 

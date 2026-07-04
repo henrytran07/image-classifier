@@ -24,7 +24,7 @@ def init_linear_params():
 
     return params
 
-def init_bn_parmas(): 
+def init_bn_params(): 
     """
         gamma1 and beta1: (512, 1)
         gamma2 and beta2: (256, 1)
@@ -33,13 +33,43 @@ def init_bn_parmas():
     bn_params = {}
     bn_params['gamma1'] = np.ones((512, 1))
     bn_params['beta1'] = np.zeros((512, 1))
+    bn_params['dgamma1'] = np.ones((512, 1))
+    bn_params['dbeta1'] = np.zeros((512, 1))
 
     bn_params['gamma2'] = np.ones((256, 1))
     bn_params['beta2'] = np.zeros((256, 1))
+    bn_params['dgamma2'] = np.ones((256, 1))
+    bn_params['dbeta2'] = np.zeros((256, 1))
 
     bn_params['gamma3'] = np.ones((128, 1))
     bn_params['beta3'] = np.zeros((128, 1))
+    bn_params['dgamma3'] = np.ones((128, 1))
+    bn_params['dbeta3'] = np.zeros((128, 1))
     return bn_params
+
+def init_adam_state(bn_params: dict, linear_params: dict): 
+    """
+        Return: 
+        adam_state: dict() v_dw and s_dw have the same shape with W
+    """
+    adam_state = {}
+    num_of_linear_layers = len(linear_params) // 2
+    for l in range(1, num_of_linear_layers + 1):
+        adam_state['v_dW' + str(l)] = np.zeros(linear_params['W' + str(l)].shape)
+        adam_state['s_dW' + str(l)] = np.zeros(linear_params['W' + str(l)].shape)
+
+        adam_state['v_db' + str(l)] = np.zeros(linear_params['b' + str(l)].shape)
+        adam_state['s_db' + str(l)] = np.zeros(linear_params['b' + str(l)].shape)
+
+    num_of_bn_layers = len(bn_params) // 4
+    for l in range(1, num_of_bn_layers + 1): 
+        adam_state['v_dgamma' + str(l)] = np.zeros(bn_params['gamma' + str(l)].shape)
+        adam_state['s_dgamma' + str(l)] = np.zeros(bn_params['gamma' + str(l)].shape)
+
+        adam_state['v_dbeta' + str(l)] = np.zeros(bn_params['beta' + str(l)].shape)
+        adam_state['s_dbeta' + str(l)] = np.zeros(bn_params['beta' + str(l)].shape)
+
+    return adam_state
 
 def batch_normalization(gamma, beta, z_hat): 
     """
@@ -152,7 +182,55 @@ def backward_prop(A4 : np, X: np, Y: np, cache : dict, params: dict):
     
     return grads
 
+def adam_optimizer(grads, bn_params, adam_state, t, beta1 = 0.9, beta2 = 0.99): 
+    """ 
+        grads: dW1, db1, dW2, db2, dW3, db3, dW4, db4
+        bn_params: gamma1, beta1, gamma2, beta2, gamma3, beta3
+        adam_state: vdw, sdw, vdb, sdb, vgamma, sgamma, vbeta, sbeta
+        t: number of steps 
+    """
 
+    num_of_linear_layer = len(grads) // 2
+    for l in range(1, num_of_linear_layer + 1): 
+        adam_state['v_dW' + str(l)] = beta1 * adam_state['v_dW' + str(l)] + (1 - beta2) * grads['dW' + str(l)]
+        adam_state['s_dW' + str(l)] = beta1 * adam_state['s_dW' + str(l)] + (1 - beta2) * grads['dW' + str(l)]**2
+
+        adam_state['v_dW' + str(l)] = adam_state['v_dW' + str(l)] / (1 - beta1**t)
+        adam_state['s_dW' + str(l)] = adam_state['s_dW' + str(l)] / (1 - beta2**t)
+
+        adam_state['v_db' + str(l)] = beta1 * adam_state['v_db' + str(l)] + (1 - beta2) * grads['db' + str(l)]
+        adam_state['s_db' + str(l)] = beta1 * adam_state['s_db' + str(l)] + (1 - beta2) * grads['db' + str(l)]**2
+        
+        adam_state['v_db' + str(l)] = adam_state['v_db' + str(l)] / (1 - beta1**t)
+        adam_state['s_db' + str(l)] = adam_state['s_db' + str(l)] / (1 - beta2**t)
+
+    num_of_bn_layers = len(bn_params) // 4
+    for l in range(num_of_bn_layers): 
+        adam_state['v_dgamma' + str(l)] = beta1 * adam_state['v_dgamma' + str(l)] + (1 - beta2) * bn_params['dgamma' + str(l)]
+        adam_state['s_dgamma' + str(l)] = beta1 * adam_state['s_dgamma' + str(l)] + (1 - beta2) * bn_params['dgamma' + str(l)]**2
+
+        adam_state['v_dbeta' + str(l)] = beta1 * adam_state['v_dbeta' + str(l)] + (1 - beta2) * bn_params['dbeta' + str(l)]
+        adam_state['s_dbeta' + str(l)] = beta1 * adam_state['s_dbeta' + str(l)] + (1 - beta2) * bn_params['dbeta' + str(l)]**2
+    
+    return adam_state
+
+def update_adam(params, bn_params, adam_state, learning_rate = 1e-3, epsilon = 1e-8): 
+    """ 
+        params: W1, b1, W2, b2, W3, b3, W4, b4
+        bn_params:  gamma1, gamma2, gamma3, beta1, beta2, deta3
+        adam_state
+    """
+    num_of_linear_layer = len(params) // 2 
+    for l in range(1, num_of_linear_layer + 1): 
+        params['W' + str(l)] = params['W' + str(l)] - learning_rate * adam_state['v_dW' + str(l)] / np.sqrt(adam_state['s_dW' + str(l)] + epsilon)
+        params['b' + str(l)] = params['b' + str(l)] - learning_rate * adam_state['v_db' + str(l)] / np.sqrt(adam_state['s_db' + str(l)] + epsilon)
+
+    num_of_bn_layers = len(bn_params) // 4
+    for l in range(1, num_of_bn_layers + 1): 
+        bn_params['gamma' + str(l)] = bn_params['gamma' + str(l)] - learning_rate * adam_state['v_gamma' + str(l)] / np.sqrt(adam_state['s_dgamma' + str(l)] + epsilon)
+        bn_params['beta' + str(l)] = bn_params['beta' + str(l)] - learning_rate * adam_state['v_beta' + str(l)] / np.sqrt(adam_state['s_dbeta' + str(l)] + epsilon)
+    
+    return params, bn_params
 
 
 
