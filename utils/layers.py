@@ -114,7 +114,7 @@ def backward_prop(A4 : np, X: np, Y: np, cache : dict, params: dict):
         params: dict contains W1, b1, W2, b2, W3, b3, W4, b4
         Y: ground_truth (1, m)
         Return: 
-            params: dict contains dW1, db1, dW2, db2, dW3, db3, dW4, db4
+            params: dict contains dW1, db1, dW2, db2, dW3, db3, dW4, db4, dgamma1, dbeta1, dgamma2, dbeta2, dgamma3, dbeta3
 
     """
     grads = {}
@@ -130,19 +130,25 @@ def backward_prop(A4 : np, X: np, Y: np, cache : dict, params: dict):
     dZ3 = params['W4'].T @ dZ4 * relu_derivative(z3)
     dW3 = (1/ m) * dZ3 @ A2.T
     db3 = (1 / m) * np.sum(dZ3, axis=1, keepdims=True)
+    dgamma3 = (1/ m) * np.sum(dZ3 * z3, axis=1, keepdims=True)
+    dbeta3 = (1/m) * np.sum(dZ3, axis=1, keepdims=True)
 
     dZ2 = params['W3'].T @ dZ3 * relu_derivative(z2)
     dW2 = (1/ m) * dZ2 @ A1.T
     db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
+    dgamma2 = (1/ m) * np.sum(dZ2 * z2, axis=1, keepdims=True)
+    dbeta2 = (1/m) * np.sum(dZ2, axis=1, keepdims=True)
 
     dZ1 = params['W2'].T @ dZ2 * relu_derivative(z1)
     dW1 = (1 / m) * dZ1 @ X.T
     db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
+    dgamma1 = (1/ m) * np.sum(dZ1 * z1, axis=1, keepdims=True)
+    dbeta1 = (1/m) * np.sum(dZ1, axis=1, keepdims=True)
 
     grads['dW4'], grads['db4'] = dW4, db4
-    grads['dW3'], grads['db3'] = dW3, db3
-    grads['dW2'], grads['db2'] = dW2, db2
-    grads['dW1'], grads['db1'] = dW1, db1
+    grads['dW3'], grads['db3'], grads['dgamma3'], grads['dbeta3'] = dW3, db3, dgamma3, dbeta3
+    grads['dW2'], grads['db2'], grads['dgamma2'], grads['dbeta2']  = dW2, db2, dgamma2, dbeta2
+    grads['dW1'], grads['db1'], grads['dgamma1'], grads['dbeta1']  = dW1, db1, dgamma1, dbeta1
     
     return grads
 

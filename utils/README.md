@@ -85,9 +85,9 @@ $$\frac{\partial L}{\partial W_1} = \frac{1}{m}  dZ_1 \cdot X^T \quad \in \mathb
 
 $$\frac{\partial L}{\partial b_1} = \frac{1}{m} \text{np.sum}(dZ_1, \text{axis}=1, \text{keepdims}=True) \quad \in \mathbb{R}^{512 \times 1}$$
 
-$$\frac{\partial L}{\partial \gamma} = \text{np.sum}(dZ \odot \hat{z}, \text{axis}=1, \text{keepdims}=True)$$
+$$\frac{\partial L}{\partial \gamma} = \frac{1}{m}\text{np.sum}(dZ \odot \hat{z}, \text{axis}=1, \text{keepdims}=True)$$
 
-$$\frac{\partial L}{\partial \beta} = \text{np.sum}(dZ, \text{axis}=1, \text{keepdims}=True)$$
+$$\frac{\partial L}{\partial \beta} = \frac{1}{m}\text{np.sum}(dZ, \text{axis}=1, \text{keepdims}=True)$$
 
 ### Adam Optimizer 
 $v_{dW} = \beta_1v_{dW} + (1 - \beta_1)dW$
