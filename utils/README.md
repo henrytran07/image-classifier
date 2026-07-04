@@ -2,17 +2,31 @@
 
 ### Architecture
 
-| Layer | Activation | Output Shape |
-|-------|------------|--------------|
-| Input | —          | (784, m)     |
-| 1     | ReLU       | (512, m)     |
-| 2     | ReLU       | (256, m)     |
-| 3     | ReLU       | (128, m)     |
-| 4     | Softmax    | (10, m)      |
-
+| Layer | Activation | Output Shape | Learnable Params ($\gamma$ and $\beta$) |
+|-------|------------|--------------|----------------------------------------|
+| Input | —          | (784, m)     | —                                      |
+| 1     | ReLU       | (512, m)     | (512, 1) and (512, 1)                  |
+| 2     | ReLU       | (256, m)     | (256, 1) and (256, 1)                  |
+| 3     | ReLU       | (128, m)     | (128, 1) and (128, 1)                  |
+| 4     | Softmax    | (10, m)      | —                                      |
 ### Softmax
 
 $$\sigma(z_i) = a_i = \frac{e^{z_i}}{\sum_{j=1}^{c} e^{z_j}}$$
+
+### Batch Normalization
+m is batch size
+
+- Find batch mean:
+$$\mu = \frac{1}{m}\sum_{i=1}^{m} z_i$$
+
+- Find batch variance:
+$$\sigma^2 = \frac{1}{m}\sum_{i=1}^{m}(z_i - \mu)^2$$
+
+- Normalize:
+$$\hat{z} = \frac{z - \mu}{\sqrt{\sigma^2 + \epsilon}}$$
+
+- Scale and shift:
+$$z = \gamma \cdot \hat{z} + \beta$$
 
 ### Categorical cross-entropy loss
 
@@ -71,17 +85,35 @@ $$\frac{\partial L}{\partial W_1} = \frac{1}{m}  dZ_1 \cdot X^T \quad \in \mathb
 
 $$\frac{\partial L}{\partial b_1} = \frac{1}{m} \text{np.sum}(dZ_1, \text{axis}=1, \text{keepdims}=True) \quad \in \mathbb{R}^{512 \times 1}$$
 
+$$\frac{\partial L}{\partial \gamma} = \text{np.sum}(dZ \odot \hat{z}, \text{axis}=1, \text{keepdims}=True)$$
+
+$$\frac{\partial L}{\partial \beta} = \text{np.sum}(dZ, \text{axis}=1, \text{keepdims}=True)$$
+
 ### Adam Optimizer 
 $v_{dW} = \beta_1v_{dW} + (1 - \beta_1)dW$
 $s_{dW} = \beta_2s_{dW} + (1 - \beta_2)dW$
 
 $v_{db} = \beta_1v_{db} + (1 - \beta_1)db$
 $s_{db} = \beta_2s_{db} + (1 - \beta_2)db$
+
+$v_{d\gamma} = \beta_1v_{d\gamma} + (1 - \beta_1)d\gamma$
+$s_{d\gamma} = \beta_2s_{d\gamma} + (1 - \beta_2)d\gamma$
+
+$v_{d\beta} = \beta_1v_{d\beta} + (1 - \beta_1)d\beta$
+$s_{d\beta} = \beta_2s_{d\beta} + (1 - \beta_2)d\beta$
 ### Bias Correction 
 
 $v_{dW}^{corr} = \frac{v_{dW}}{1 - \beta_1^t} \quad \quad s_{dW}^{corr} = \frac{s_{dW}}{1 - \beta_2^t}$ with t is number of steps 
 
 $v_{db}^{corr} = \frac{v_{db}}{1 - \beta_1^t} \quad \quad s_{db}^{corr} = \frac{s_{db}}{1 - \beta_2^t}$ 
 
+$v_{d\gamma}^{corr} = \frac{v_{d\gamma}}{1 - \beta_1^t} \quad \quad s_{d\gamma}^{corr} = \frac{s_{d\gamma}}{1 - \beta_2^t}$ 
+
+$v_{d\beta}^{corr} = \frac{v_{d\beta}}{1 - \beta_1^t} \quad \quad s_{d\beta}^{corr} = \frac{s_{d\beta}}{1 - \beta_2^t}$ 
+
+
 ### Update 
 $W = W - \alpha \frac{v_{dW}^{corr}}{\sqrt{s_{dW}^{corr} + \epsilon}} \quad \quad b = b - \alpha \frac{v_{db}^{corr}}{\sqrt{s_{db}^{corr} + \epsilon}}$
+
+$\gamma = \gamma - \alpha \frac{v_{d\gamma}^{corr}}{\sqrt{s_{d\gamma}^{corr} + \epsilon}} \quad \quad \beta = \beta - \alpha \frac{v_{d\beta}^{corr}}{\sqrt{s_{d\beta}^{corr} + \epsilon}}$
+

@@ -1,5 +1,5 @@
 import numpy as np 
-from .activations import relu, softmax
+from .activations import relu, softmax, z_score_normalization
 def init_linear_params(): 
     """
         W1: (n1, 784), b1: (n1, 1)
@@ -24,7 +24,34 @@ def init_linear_params():
 
     return params
 
-def forward_prop(params, X): 
+def init_bn_parmas(): 
+    """
+        gamma1 and beta1: (512, 1)
+        gamma2 and beta2: (256, 1)
+        gamma3 and beta3: (128, 1)
+    """
+    bn_params = {}
+    bn_params['gamma1'] = np.ones((512, 1))
+    bn_params['beta1'] = np.zeros((512, 1))
+
+    bn_params['gamma2'] = np.ones((256, 1))
+    bn_params['beta2'] = np.zeros((256, 1))
+
+    bn_params['gamma3'] = np.ones((128, 1))
+    bn_params['beta3'] = np.zeros((128, 1))
+    return bn_params
+
+def batch_normalization(gamma, beta, z_hat): 
+    """
+        gamma and beta: (n, 1)
+        z_hat: (n, m)
+        Return: 
+            z_norm (n, m)
+    """
+    return gamma * z_hat + beta
+
+
+def forward_prop(params, bn_params, X): 
     """ 
         params: W1, b1, W2, b2, W3, b3, W4, b4
         X: (784, m)
@@ -32,6 +59,8 @@ def forward_prop(params, X):
         z2: (n2, m), A2: (n2, m)
         z3: (n3, m), A3: (n3, m)
         z4: (n4, m), A4: (n4, m)
+
+        bn_params: gamma1, beta1, gamma2, beta2, gamma3, beta3
         Return: 
             cache: dict contains z4, A3, z3, A2, z2, A1, z1
             A4: (n_classes, m)
@@ -42,17 +71,24 @@ def forward_prop(params, X):
     W3, b3 = params['W3'], params['b3']
     W4, b4 = params['W4'], params['b4']
 
-    z1 = W1 @ X + b1 
-    A1 = relu(z1)
-    cache['z1'], cache['A1'] = z1, A1
+    gamma1, beta1 = bn_params['gamma1'], bn_params['beta1']
+    gamma2, beta2 = bn_params['gamma2'], bn_params['beta2']
+    gamma3, beta3 = bn_params['gamma3'], bn_params['beta3']
 
-    z2 = W2 @ A1 + b2 
-    A2 = relu(z2)
-    cache['z2'], cache['A2'] = z2, A2
+    z1_hat = z_score_normalization(W1 @ X + b1)
+    z1_norm = batch_normalization(gamma1, beta1, z1_hat)
+    A1 = relu(z1_norm)
+    cache['z1'], cache['A1'] = z1_norm, A1
 
-    z3 = W3 @ A2 + b3 
-    A3 = relu(z3)
-    cache['z3'], cache['A3'] = z3, A3
+    z2_hat = z_score_normalization(W2 @ A1 + b2) 
+    z2_norm = batch_normalization(gamma2, beta2, z2_hat)
+    A2 = relu(z2_norm)
+    cache['z2'], cache['A2'] = z2_norm, A2
+
+    z3_hat = z_score_normalization(W3 @ A2 + b3)
+    z3_norm = batch_normalization(gamma3, beta3, z3_hat)
+    A3 = relu(z3_norm)
+    cache['z3'], cache['A3'] = z3_norm, A3
 
     z4 = W4 @ A3 + b4 
     A4 = softmax(z4)

@@ -1,12 +1,12 @@
 import numpy as np 
 
-def z_score_normalization(x : np):
+def z_score_normalization(x : np, epsilon = 1e-8):
     """
         np.array(x)
         Return:  
             np.array(x_normalized)
     """ 
-    return (x - x.mean()) / x.std()
+    return (x - x.mean()) / np.sqrt(x.std()**2 + epsilon) 
 
 def relu(z):
     """
