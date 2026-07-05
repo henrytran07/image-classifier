@@ -140,3 +140,6 @@ For each batch `i` in `range(num_batches)`:
 
 If `remainder > 0`, the last batch covers `X[:, num_batches * batch_size:]`
 
+### Dropout Regularization
+
+- `keep_prob = 0.8` — during each forward pass, every neuron in a hidden layer has an 80% chance of being active and a 20% chance of being temporarily dropped (set to zero). This forces the network to learn redundant representations and prevents over-reliance on any single neuron, reducing overfitting.
