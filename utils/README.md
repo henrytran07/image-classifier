@@ -142,10 +142,6 @@ $W = W - \alpha \dfrac{v_{dW}^{corr}}{\sqrt{s_{dW}^{corr}} + \epsilon} \quad \qu
 
 $\gamma = \gamma - \alpha \dfrac{v_{d\gamma}^{corr}}{\sqrt{s_{d\gamma}^{corr}} + \epsilon} \quad \quad \beta = \beta - \alpha \dfrac{v_{d\beta}^{corr}}{\sqrt{s_{d\beta}^{corr}} + \epsilon}$
 
-> Note the `+ \epsilon` sits **outside** the square root (`\sqrt{s^{corr}} + \epsilon`),
-> matching the code — the earlier version of this doc showed `\sqrt{s^{corr} + \epsilon}`
-> (epsilon inside the root), which is a common alternate convention but not
-> what's implemented here.
 
 ### Split Training Examples into Mini-Batches
 
@@ -170,19 +166,5 @@ For each batch `i` in `range(num_batches)`:
 
 If `remainder > 0`, the last batch covers `X[:, num_batches * batch_size:]`
 
----
 
-## Implementation Notes / Changelog
 
-- **Batch normalization fixed.** Forward and backward pass now match the
-  standard per-feature BN formulation described above (previously, the "batch
-  norm" was actually a single global mean/std over the whole array, and the
-  backward pass didn't propagate gradient through the normalization step at
-  all). Verified against numerical gradients for every layer
-  (`W1–W4, b4, gamma1–3, beta1–3`) at ~1e-10 relative error.
-- **Running mean/var added** so inference (`training=False`) no longer
-  normalizes using whatever batch happens to be passed in.
-- **`cce_loss` clips probabilities** away from 0 before taking `log`, avoiding
-  occasional `nan` losses.
-- **`data_utils`**: validation/test sets are now standardized using the
-  *training* set's mean/std, rather than each split's own statistics.
