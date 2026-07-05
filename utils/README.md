@@ -32,21 +32,6 @@ $$\hat{z} = \frac{u - \mu}{\sqrt{\sigma^2 + \epsilon}}$$
 - Scale and shift:
 $$z = \gamma \odot \hat{z} + \beta$$
 
-**Running statistics for inference.** At eval time there is no batch to compute
-`μ`/`σ²` from, so each BN layer keeps an exponential moving average of the
-training-time batch statistics:
-
-$$\text{running\_mean} \leftarrow \text{momentum} \cdot \text{running\_mean} + (1-\text{momentum}) \cdot \mu$$
-$$\text{running\_var} \leftarrow \text{momentum} \cdot \text{running\_var} + (1-\text{momentum}) \cdot \sigma^2$$
-
-with `momentum = 0.9`. Inference normalizes with `running_mean`/`running_var`
-instead of a fresh batch `μ`/`σ²`.
-
-**Why the bias `b` before BN is inert.** Because BN immediately subtracts the
-batch mean, any constant bias added to `u` cancels out: `db1`, `db2`, `db3`
-are always ~0. `beta` is the effective bias for layers 1–3; `b1`–`b3` are kept
-only to mirror the architecture table above and could be dropped without
-changing the model.
 
 ### Dropout Regularization
 
@@ -127,13 +112,6 @@ $$\frac{\partial L}{\partial A_{prev}} = W_l^T \cdot du_l$$
 
 which is what continues backward into the next (earlier) layer's dropout mask
 and ReLU derivative.
-
-> **Previous version of this doc / earlier code treated BN as pass-through
-> during backprop** (i.e. used `dZ` directly as `du`, and computed `dgamma`
-> against `z` instead of `\hat{z}`). That undercounts the batch-coupling terms
-> above and gives gradients for `W1–W3`, `b1–b3`, and `gamma1–gamma3` that are
-> off by 10–30% relative to the true gradient (verified via numerical
-> gradient checking). The formulas above reflect the corrected implementation.
 
 ### Adam Optimizer
 $$v_{dW} = \beta_1v_{dW} + (1 - \beta_1)dW$$
