@@ -60,11 +60,11 @@ def batch_norm_forward(u, gamma, beta, running_mean, running_var,
         In training mode, running_mean/var are updated IN PLACE.
     """
     if training:
-        mu = u.mean(axis=1, keepdims=True)            # (n,1) per-feature mean over batch
-        var = u.var(axis=1, keepdims=True)            # (n,1) population variance (ddof=0)
+        mu = u.mean(axis=1, keepdims=True)            
+        var = u.var(axis=1, keepdims=True)            
         inv_std = 1.0 / np.sqrt(var + epsilon)
         z_hat = (u - mu) * inv_std
-        # update running estimates for inference
+
         running_mean *= momentum
         running_mean += (1 - momentum) * mu
         running_var *= momentum

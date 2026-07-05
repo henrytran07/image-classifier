@@ -53,7 +53,7 @@ def load_dense_model_ds():
     """
     x_train, y_train, x_val, y_val, x_test, y_test = load_mnist_ds()
 
-    x_train_f = x_train.reshape(x_train.shape[0], -1).T.astype(np.float64)  # (784, m)
+    x_train_f = x_train.reshape(x_train.shape[0], -1).T.astype(np.float64) 
     x_val_f = x_val.reshape(x_val.shape[0], -1).T.astype(np.float64)
     x_test_f = x_test.reshape(x_test.shape[0], -1).T.astype(np.float64)
 

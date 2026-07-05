@@ -21,6 +21,23 @@ class dense_model:
         self.epsilon = epsilon
         self.bn_momentum = bn_momentum
         self.t = 1
+    
+    def __init__(self, linear_params, bn_params, bn_running_state, 
+                 learning_rate=1e-3, epochs=20, mini_batch_size=64,
+                 keep_prob=0.8, beta1=0.9, beta2=0.999, epsilon=1e-8,
+                 bn_momentum=0.9): 
+        self.linear_params = linear_params
+        self.bn_params = bn_params
+        self.bn_running = bn_running_state
+        self.alpha = learning_rate
+        self.epochs = epochs
+        self.mini_batch_size = mini_batch_size
+        self.keep_prob = keep_prob
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+        self.bn_momentum = bn_momentum
+        self.t = 1
 
     def _one_hot(self, y, n_classes=10):
         m = y.shape[1]
