@@ -20,12 +20,15 @@ The project also includes a web interface where you can upload an image and have
 
 ```
 image-classifier/
+├── notebooks/
+    ├── testing.ipynb      # For testing
 ├── utils/
 │   ├── activations.py     # ReLU, Softmax, CCE loss
 │   ├── layers.py          # Forward/backward pass, BN, dropout, Adam
 │   ├── train.py           # dense_model class (fit / predict)
 │   ├── data_utils.py      # Data loading and preprocessing
 │   └── evaluate.py        # Accuracy, confusion matrix
+    └── README.md          # formulas, derivation, and coding plan
 ├── train/
 │   └── weights.npz        # Saved model weights (git-ignored)
 └── README.md
@@ -37,6 +40,7 @@ image-classifier/
 
 **Train and save weights:**
 ```bash
+git clone https://github.com/henrytran07/image-classifier.git
 cd image-classifier
 python -m utils.dense_model
 ```
