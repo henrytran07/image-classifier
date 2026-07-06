@@ -1,4 +1,4 @@
-## Image Classifier 
+<!-- ## Image Classifier 
 
 A learning project that reinforces machine learning fundamentals by building dense and CNN models from scratch using Numpy only. 
 
@@ -48,4 +48,16 @@ python -m utils.dense_model
 **Run the web app:**
 *(Coming soon)*
 
+--- -->
 ---
+title: Image Classifier
+emoji: 🖼️
+colorFrom: green
+colorTo: gray
+sdk: docker
+pinned: false
+---
+
+# Image Classifier
+
+FastAPI web app for a dense neural network image classifier trained on Fashion-MNIST.
