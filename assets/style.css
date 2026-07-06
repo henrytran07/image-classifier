@@ -60,11 +60,12 @@ header .navbar ul li a{
   font-weight: 600;
   text-decoration: none;
   letter-spacing: 0.04rem;
+  text-decoration: none;
 }
 header .navbar ul li a.active,
 header .navbar ul li a:hover{
   color: #aab1f4;
-  border-bottom: .2rem solid #011aff;
+  /* border-bottom: .2rem solid #011aff; */
   padding: .5rem 0;
 }
 /* navbar ends */
