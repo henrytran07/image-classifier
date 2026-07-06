@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Image Classifier" />
+    <meta name="description" content="Welcome to Henry's Image Classifier Website" />
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Dense Network Model</title>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">Henry Tran</a>
+        <div id="menu" class="fas fa-bars"></div>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/">CNN Model</a></li>
+                <li><a href="https://henrytran07.github.io/">Contact Me</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Dense Network Model</h1>
+                <p class="page-subtitle">Training History</p>
+            </div>
+            <span class="status-badge">
+                <span class="status-dot"></span>
+                Trained
+            </span>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-label">
+                    <span class="chart-marker chart-marker--loss"></span>
+                    Loss
+                </div>
+                <img src="{{ loss_graph_url }}" alt="Loss Graph" class="chart-img">
+            </div>
+            <div class="chart-card">
+                <div class="chart-label">
+                    <span class="chart-marker chart-marker--acc"></span>
+                    Accuracy
+                </div>
+                <img src="{{ accuracy_url }}" alt="Accuracy Graph" class="chart-img">
+            </div>
+        </div>
+
+        <details class="table-collapse" open>
+            <summary class="table-toggle">
+                <span>Epoch Metrics</span>
+                <i class="fas fa-chevron-down chevron"></i>
+            </summary>
+            <div class="table-wrapper">
+                <table class="training-table">
+                    <thead>
+                        <tr>
+                            <th>Epoch</th>
+                            <th>Train Loss</th>
+                            <th>Val Loss</th>
+                            <th>Val Accuracy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for epoch, values in training_history.items() %}
+                        <tr>
+                            <td>{{ epoch }}</td>
+                            <td>{{ "%.4f"|format(values.train_loss) }}</td>
+                            <td>{{ "%.4f"|format(values.val_loss) }}</td>
+                            <td>{{ "%.4f"|format(values.val_accuracy) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </main>
+
+    <footer class="footer">
+    <div class="footer-content">
+
+    <div class="footer-socials">
+        <a href="https://linkedin.com/in/..." class="linkedin"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://github.com/henrytran07" class="github"><i class="fab fa-github"></i></a>
+        <a href="mailto:you@email.com" class="email"><i class="fas fa-envelope"></i></a>
+    </div>
+
+        <p class="footer-credit">© 2026 Henry Tran</p>
+    </div>
+    </footer>
+</body>
+</html>

@@ -2,9 +2,11 @@ from .layers import *
 from .activations import cce_loss
 from .data_utils import shuffle_data
 import numpy as np
+import json 
+import os 
 
 
-class dense_model:
+class dense_model_training:
     def __init__(self, learning_rate=1e-3, epochs=20, mini_batch_size=64,
                  keep_prob=0.8, beta1=0.9, beta2=0.999, epsilon=1e-8,
                  bn_momentum=0.9):
@@ -22,23 +24,6 @@ class dense_model:
         self.bn_momentum = bn_momentum
         self.t = 1
     
-    def __init__(self, linear_params, bn_params, bn_running_state, 
-                 learning_rate=1e-3, epochs=20, mini_batch_size=64,
-                 keep_prob=0.8, beta1=0.9, beta2=0.999, epsilon=1e-8,
-                 bn_momentum=0.9): 
-        self.linear_params = linear_params
-        self.bn_params = bn_params
-        self.bn_running = bn_running_state
-        self.alpha = learning_rate
-        self.epochs = epochs
-        self.mini_batch_size = mini_batch_size
-        self.keep_prob = keep_prob
-        self.beta1 = beta1
-        self.beta2 = beta2
-        self.epsilon = epsilon
-        self.bn_momentum = bn_momentum
-        self.t = 1
-
     def _one_hot(self, y, n_classes=10):
         m = y.shape[1]
         oh = np.zeros((n_classes, m))
@@ -48,6 +33,10 @@ class dense_model:
     def fit(self, x_train, y_train, x_val, y_val):
         y_train_oh = self._one_hot(y_train)
         y_val_oh = self._one_hot(y_val)
+        train_dict = {}
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        path_json = os.path.join(base_dir, "..", "train", "training_history.json")
+        path_npz = os.path.join(base_dir, "..", "train")
         for epoch in range(self.epochs):
             sx, sy = shuffle_data(x_train, y_train_oh)
             mini_batches = get_mini_batches(sx, sy, self.mini_batch_size)
@@ -72,11 +61,40 @@ class dense_model:
             val_loss = cce_loss(A4_val, y_val_oh)
             yhat_val = np.argmax(A4_val, axis=0, keepdims=True)
             val_acc = float(np.mean(yhat_val == y_val))
+            train_dict["Epoch" + str(epoch + 1)] = {
+                "train_loss": float(epoch_loss / len(mini_batches)),
+                "val_loss": float(val_loss), 
+                "val_accuracy": float(val_acc)
+            }
+
+            with open(path_json, "w") as f: 
+                json.dump(train_dict, f, indent=4)
+
             print(f"Epoch {epoch+1}/{self.epochs} — "
                   f"train_loss: {epoch_loss/len(mini_batches):.4f} — "
                   f"val_loss: {val_loss:.4f} — val_accuracy: {val_acc:.4f}")
+        
+        np.savez(f"{path_npz}/weights.npz", **self.linear_params, **self.bn_params, **self.bn_running)
 
     def predict(self, X):
         _, A4 = forward_prop(self.linear_params, self.bn_params, X,
                              training=False, bn_running=self.bn_running)
         return np.argmax(A4, axis=0, keepdims=True)
+    
+class dense_model(dense_model_training): 
+    def __init__(self, linear_params, bn_params, bn_running_state, 
+                 learning_rate=1e-3, epochs=20, mini_batch_size=64,
+                 keep_prob=0.8, beta1=0.9, beta2=0.999, epsilon=1e-8,
+                 bn_momentum=0.9): 
+        self.linear_params = linear_params
+        self.bn_params = bn_params
+        self.bn_running = bn_running_state
+        self.alpha = learning_rate
+        self.epochs = epochs
+        self.mini_batch_size = mini_batch_size
+        self.keep_prob = keep_prob
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+        self.bn_momentum = bn_momentum
+        self.t = 1
