@@ -5,3 +5,4 @@ numpy
 matplotlib
 datasets
 python-multipart
+pillow
