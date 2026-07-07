@@ -54,7 +54,8 @@ cd image-classifier
 python -m utils.dense_model
 ```
 
-**Run the web app:**
-*https://henrytran07-image-classifier.hf.space/*
+## Demo
+
+🌐 **Live Demo:** [henrytran07-image-classifier.hf.space](https://henrytran07-image-classifier.hf.space/)
 
 ---
