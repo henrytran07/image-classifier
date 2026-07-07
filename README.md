@@ -58,4 +58,9 @@ python -m utils.dense_model
 
 🌐 **Live Demo:** [henrytran07-image-classifier.hf.space](https://henrytran07-image-classifier.hf.space/)
 
+## Credits
+
+All ML implementation — dense network, CNN, batch norm, dropout, Adam optimizer, backprop derivations, and training pipeline — built from scratch by me.
+
+Frontend UI styling and layout assisted by Claude (Anthropic).
 ---
