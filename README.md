@@ -60,7 +60,8 @@ python -m utils.dense_model
 
 ## Credits
 
-All ML implementation — dense network, CNN, batch norm, dropout, Adam optimizer, backprop derivations, and training pipeline — built from scratch by me.
+- All ML implementation — dense network, CNN, batch norm, dropout, Adam optimizer, backprop derivations, and training pipeline — built from scratch by me.
+- Frontend UI styling and layout assisted by Claude (Anthropic).
 
-Frontend UI styling and layout assisted by Claude (Anthropic).
+
 ---
