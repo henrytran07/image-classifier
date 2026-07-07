@@ -36,37 +36,61 @@ if __name__ == '__main__':
     """
         Generate loss graph 
     """
+    # base_dir = os.path.dirname(os.path.abspath(__file__))
+    # graph_dir = os.path.join(base_dir, "..", "train")
+    # train_dir = os.path.join(base_dir, "..", "train" , "training_history.json")
+    # train_dict = {}
+    # with open(train_dir, "r") as f: 
+    #     train_dict = json.load(f)
+
+    # train_loss_data = np.array([train_dict["Epoch" + str(i)]['train_loss'] for i in range(1, 21)])
+    # val_loss_data = np.array([train_dict["Epoch" + str(i)]['val_loss'] for i in range(1, 21)])
+    # accuracy_data = np.array([train_dict["Epoch" + str(i)]['val_accuracy'] for i in range(1, 21)] )
+    # epochs = np.arange(1, 21)    
+    # plt.figure(figsize=(8, 5))
+    # plt.plot(epochs, train_loss_data, label="Train Loss", marker="o")
+    # plt.plot(epochs, val_loss_data, label="Val Loss", marker="x")
+    # plt.xlabel("Epoch")
+    # plt.ylabel("Loss")
+    # plt.title("Training History")
+    # plt.legend()
+    # plt.grid(True, alpha=0.3)
+    # os.makedirs(graph_dir, exist_ok=True)
+    # plt.savefig(f"{graph_dir}/cce_loss.png", dpi=150, bbox_inches="tight")
+    # plt.show()
+
+    # plt.figure(figsize=(8, 5))
+    # plt.plot(epochs, accuracy_data, label="Accuracy", marker="o")
+    # plt.xlabel("Epoch")
+    # plt.ylabel("Accuracy")
+    # plt.title("Accuracy History")
+    # plt.legend()
+    # plt.grid(True, alpha=0.3)
+    # os.makedirs(graph_dir, exist_ok=True)
+    # plt.savefig(f"{graph_dir}/accuracy.png", dpi=150, bbox_inches="tight")
+    # plt.show()
+
+    """
+        Save some test image
+    """
+    LABELS = [
+    "T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
+    "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
+    ]
+
+    _, _, _, _, x_test_dm, y_test = load_dense_model_ds() 
+    img = [x_test_dm[:, i].reshape(28, 28, 1) for i in range(10)]
+    ground_truth = [LABELS[y_test[0, i]] for i in range(10)]
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    graph_dir = os.path.join(base_dir, "..", "train")
-    train_dir = os.path.join(base_dir, "..", "train" , "training_history.json")
-    train_dict = {}
-    with open(train_dir, "r") as f: 
-        train_dict = json.load(f)
+    img_dir = os.path.join(base_dir, "..", "test")
+    os.makedirs(img_dir, exist_ok=True)
 
-    train_loss_data = np.array([train_dict["Epoch" + str(i)]['train_loss'] for i in range(1, 21)])
-    val_loss_data = np.array([train_dict["Epoch" + str(i)]['val_loss'] for i in range(1, 21)])
-    accuracy_data = np.array([train_dict["Epoch" + str(i)]['val_accuracy'] for i in range(1, 21)] )
-    epochs = np.arange(1, 21)    
-    plt.figure(figsize=(8, 5))
-    plt.plot(epochs, train_loss_data, label="Train Loss", marker="o")
-    plt.plot(epochs, val_loss_data, label="Val Loss", marker="x")
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.title("Training History")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    os.makedirs(graph_dir, exist_ok=True)
-    plt.savefig(f"{graph_dir}/cce_loss.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    for i in range(10): 
+        plt.figure(figsize=(8, 5))
+        plt.imshow(img[i].squeeze(), cmap="gray") 
+        plt.title(f"Label: {ground_truth[i]}")
+        plt.axis("off")
+        plt.savefig(f"{img_dir}/img{i}.png", dpi=150, bbox_inches="tight")
+        plt.close() 
 
-    plt.figure(figsize=(8, 5))
-    plt.plot(epochs, accuracy_data, label="Accuracy", marker="o")
-    plt.xlabel("Epoch")
-    plt.ylabel("Accuracy")
-    plt.title("Accuracy History")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    os.makedirs(graph_dir, exist_ok=True)
-    plt.savefig(f"{graph_dir}/accuracy.png", dpi=150, bbox_inches="tight")
-    plt.show()
 

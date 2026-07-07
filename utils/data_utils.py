@@ -62,6 +62,6 @@ def load_dense_model_ds():
 
     x_train_dm = (x_train_f - mean) / std
     x_val_dm = (x_val_f - mean) / std
-    x_test_dm = (x_test_f - mean) / std
+    # x_test_dm = (x_test_f - mean) / std
 
-    return x_train_dm, y_train, x_val_dm, y_val, x_test_dm, y_test
+    return x_train_dm, y_train, x_val_dm, y_val, x_test_f, y_test

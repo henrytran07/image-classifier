@@ -82,6 +82,66 @@
         </details>
     </main>
 
+    <div class="upload-section">
+        <h2 class="section-title">Try It</h2>
+        <div class="upload-card" id="upload-card">
+            <input type="file" id="file-input" accept="image/*" hidden>
+            <div class="upload-area" id="upload-area">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <p>Drop an image or <span class="upload-link">browse</span></p>
+                <p class="upload-hint">28×28 grayscale recommended</p>
+            </div>
+            <img id="preview" class="preview-img" style="display:none">
+        </div>
+
+        <div class="result-card" id="result-card" style="display:none">
+            <div class="result-label" id="result-label"></div>
+            <div class="result-confidence" id="result-confidence"></div>
+            <button id="clear-btn" onclick="resetUI()">Try Another</button>
+        </div>
+    </div>
+
+    <script>
+    const uploadArea = document.getElementById("upload-area");
+    const fileInput = document.getElementById("file-input");
+    const preview = document.getElementById("preview");
+    const resultCard = document.getElementById("result-card");
+    const resultLabel = document.getElementById("result-label");
+    const resultConfidence = document.getElementById("result-confidence");
+
+    uploadArea.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+        uploadArea.style.display = "none";
+
+        // Send to API
+        const formData = new FormData();
+        formData.append("file", file);
+
+        resultCard.style.display = "block";
+        resultLabel.textContent = "Predicting...";
+        resultConfidence.textContent = "";
+
+        const res = await fetch("/predict", { method: "POST", body: formData });
+        const data = await res.json();
+
+        resultLabel.textContent = data.label;
+    });
+    
+    function resetUI() {
+        preview.src = "";
+        preview.style.display = "none";
+        uploadArea.style.display = "block";
+        resultCard.style.display = "none";
+        fileInput.value = "";
+    }
+    </script>
+
     <footer class="footer">
     <div class="footer-content">
 
